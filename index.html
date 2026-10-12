@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#071411">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Authenticator</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html[data-theme="dark"] {
+    --bg: #071411;
+    --bg-glow-1: rgba(16,185,129,0.16);
+    --bg-glow-2: rgba(52,211,153,0.10);
+    --surface: #0c1f19;
+    --surface-2: #112a22;
+    --surface-3: #17382d;
+    --surface-4: #1d4235;
+    --border: rgba(255,255,255,0.06);
+    --border-strong: rgba(255,255,255,0.12);
+    --text: #e7f5ef;
+    --text-muted: #7ea79a;
+    --text-dim: #4d6f65;
+    --primary: #10b981;
+    --primary-2: #34d399;
+    --primary-soft: rgba(16,185,129,0.12);
+    --primary-glow: rgba(16,185,129,0.4);
+    --primary-contrast: #ffffff;
+    --success: #10b981;
+    --danger: #ff4757;
+    --warning: #ffaa00;
+    --nav-bg: rgba(9,20,17,0.88);
+    --appbar-bg: linear-gradient(180deg, rgba(7,20,17,0.96), rgba(7,20,17,0.72));
+    --modal-bg: #112a22;
+    --card-grad: linear-gradient(180deg, var(--surface-2), var(--surface));
+    --card-top-shine: rgba(255,255,255,0.07);
+    --input-bg: rgba(0,0,0,0.28);
+    --ring-track: rgba(255,255,255,0.07);
+    --scroll-thumb: #1d4235;
+    --lock-bg: radial-gradient(circle at 50% 30%, #0a1f19, #071411 60%);
+  }
+
+  html[data-theme="light"] {
+    --bg: #eff7f3;
+    --bg-glow-1: rgba(16,185,129,0.14);
+    --bg-glow-2: rgba(5,150,105,0.09);
+    --surface: #ffffff;
+    --surface-2: #f6fbf8;
+    --surface-3: #e8f2ed;
+    --surface-4: #d9ebe2;
+    --border: rgba(6,60,40,0.09);
+    --border-strong: rgba(6,60,40,0.16);
+    --text: #0a1f18;
+    --text-muted: #4a6b60;
+    --text-dim: #8aa69c;
+    --primary: #059669;
+    --primary-2: #10b981;
+    --primary-soft: rgba(5,150,105,0.10);
+    --primary-glow: rgba(5,150,105,0.28);
+    --primary-contrast: #ffffff;
+    --success: #059669;
+    --danger: #e11d48;
+    --warning: #d97706;
+    --nav-bg: rgba(255,255,255,0.86);
+    --appbar-bg: linear-gradient(180deg, rgba(239,247,243,0.95), rgba(239,247,243,0.7));
+    --modal-bg: #ffffff;
+    --card-grad: linear-gradient(180deg, #ffffff, #f6fbf8);
+    --card-top-shine: rgba(5,150,105,0.08);
+    --input-bg: rgba(6,60,40,0.035);
+    --ring-track: rgba(6,60,40,0.10);
+    --scroll-thumb: #c5dcd2;
+    --lock-bg: radial-gradient(circle at 50% 30%, #e3f1ea, #eff7f3 60%);
+  }
+
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, 'Hind Siliguri', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.35s ease, color 0.35s ease;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -120px, var(--bg-glow-1), transparent 65%),
+      radial-gradient(ellipse 700px 400px at 100% 105%, var(--bg-glow-2), transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  input, button { font-family: inherit; }
+
+  .app-frame {
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+
+  /* ---------- App Bar ---------- */
+  .app-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 16px;
+    background: var(--appbar-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.35s ease, border-color 0.35s ease;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .logo-mark {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-2), var(--primary));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary-contrast);
+    box-shadow: 0 6px 20px var(--primary-glow), inset 0 1px 0 rgba(255,255,255,0.25);
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 22px; height: 22px; }
+  .brand-text { min-width: 0; }
+  .brand-text h1 {
+    font-size: 17px; font-weight: 700;
+    letter-spacing: -0.3px; line-height: 1.15;
+    color: var(--text);
+  }
+  .brand-sub {
+    font-size: 11.5px; color: var(--text-muted);
+    font-weight: 500; letter-spacing: 0.2px;
+    display: flex; align-items: center; gap: 5px;
+    margin-top: 1px;
+  }
+  .brand-sub::before {
+    content: ''; width: 5px; height: 5px;
+    border-radius: 50%; background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+  }
+  .app-bar-actions { display: flex; gap: 8px; align-items: center; }
+
+  .icon-action {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  }
+  .icon-action:active { transform: scale(0.94); }
+  .icon-action:hover { border-color: var(--border-strong); }
+  .icon-action svg { width: 19px; height: 19px; position: absolute;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s; }
+  .theme-toggle .icon-sun { color: #f59e0b; }
+  .theme-toggle .icon-moon { color: var(--primary); }
+  html[data-theme="dark"] .theme-toggle .icon-sun { opacity: 1; transform: rotate(0deg) scale(1); }
+  html[data-theme="dark"] .theme-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+  html[data-theme="light"] .theme-toggle .icon-sun { opacity: 0; transform: rotate(90deg) scale(0.5); }
+  html[data-theme="light"] .theme-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+  .lock-action svg { color: var(--primary); position: static; }
+
+  /* ---------- Main ---------- */
+  .app-main { flex: 1; padding: 20px 20px 0; display: flex; flex-direction: column; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: panelIn 0.32s cubic-bezier(0.16,1,0.3,1); }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  .section-title {
+    font-size: 12.5px; font-weight: 700;
+    color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.7px; margin: 4px 4px 12px;
+  }
+
+  /* ---------- Card ---------- */
+  .card {
+    background: var(--card-grad);
+    border: 1px solid var(--border);
+    border-radius: 18px; padding: 18px;
+    margin-bottom: 14px; position: relative;
+    transition: background 0.35s ease, border-color 0.35s ease;
+  }
+  .card.danger {
+    border-color: rgba(255,71,87,0.28);
+    background: linear-gradient(180deg, rgba(255,71,87,0.06), rgba(255,71,87,0.01));
+  }
+  .card-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14.5px; font-weight: 700;
+    color: var(--text); margin-bottom: 4px;
+  }
+  .card-title svg { width: 17px; height: 17px; color: var(--primary); flex-shrink: 0; }
+  .card-title.danger svg { color: var(--danger); }
+  .card-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 14px; }
+
+  .field { margin-bottom: 12px; }
+  .field:last-of-type { margin-bottom: 0; }
+  .field-label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--text-muted); margin-bottom: 7px; letter-spacing: 0.2px;
+  }
+  .input {
+    width: 100%; padding: 14px 15px;
+    background: var(--input-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 13px; color: var(--text);
+    font-size: 15px; outline: none;
+    transition: all 0.18s ease; font-weight: 500;
+  }
+  .input::placeholder { color: var(--text-dim); font-weight: 400; }
+  .input:focus {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    box-shadow: 0 0 0 4px var(--primary-soft);
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; width: 100%; padding: 14px 18px;
+    border: none; border-radius: 13px;
+    font-size: 14.5px; font-weight: 700;
+    letter-spacing: 0.1px; cursor: pointer;
+    transition: all 0.15s ease; font-family: inherit;
+    white-space: nowrap;
+  }
+  .btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .btn:active { transform: scale(0.975); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .btn-primary {
+    background: linear-gradient(180deg, var(--primary-2), var(--primary));
+    color: var(--primary-contrast);
+    box-shadow: 0 4px 14px var(--primary-glow), inset 0 1px 0 rgba(255,255,255,0.22);
+  }
+  .btn-primary:hover { box-shadow: 0 6px 22px var(--primary-glow), inset 0 1px 0 rgba(255,255,255,0.25); }
+  .btn-secondary {
+    background: var(--surface-3); color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--surface-4); border-color: var(--border-strong); }
+  .btn-ghost {
+    background: var(--primary-soft); border: 1.5px solid var(--border-strong);
+    color: var(--text);
+  }
+  .btn-ghost:hover { background: var(--surface-3); }
+  .btn-danger {
+    background: rgba(255,71,87,0.08);
+    border: 1.5px solid rgba(255,71,87,0.4);
+    color: var(--danger);
+  }
+  .btn-danger:hover { background: rgba(255,71,87,0.14); }
+  .btn-group { display: flex; flex-direction: column; gap: 10px; }
+
+  /* ---------- QR Scanner ---------- */
+  .scanner-shell {
+    position: relative; margin-top: 14px;
+    border-radius: 16px; overflow: hidden;
+    background: #000; display: none;
+    aspect-ratio: 1 / 1;
+  }
+  .scanner-shell.active { display: block; animation: panelIn 0.3s; }
+  #reader { width: 100%; height: 100%; }
+  #reader video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .scanner-overlay {
+    position: absolute; inset: 0; pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .scan-frame { width: 62%; aspect-ratio: 1; position: relative; border-radius: 20px; }
+  .scan-frame::before, .scan-frame::after,
+  .scan-frame > span::before, .scan-frame > span::after {
+    content: ''; position: absolute; width: 28px; height: 28px;
+    border: 3px solid var(--primary-2); border-radius: 4px;
+    box-shadow: 0 0 14px var(--primary-glow);
+  }
+  .scan-frame::before { top: 0; left: 0; border-right: 0; border-bottom: 0; border-top-left-radius: 20px; }
+  .scan-frame::after { top: 0; right: 0; border-left: 0; border-bottom: 0; border-top-right-radius: 20px; }
+  .scan-frame > span::before { bottom: 0; left: 0; border-right: 0; border-top: 0; border-bottom-left-radius: 20px; }
+  .scan-frame > span::after { bottom: 0; right: 0; border-left: 0; border-top: 0; border-bottom-right-radius: 20px; }
+  .scan-line {
+    position: absolute; left: 6%; right: 6%; top: 50%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-2), transparent);
+    box-shadow: 0 0 20px var(--primary-2);
+    animation: scanline 2.4s ease-in-out infinite;
+  }
+  @keyframes scanline {
+    0%, 100% { transform: translateY(-110px); opacity: 0; }
+    10%, 90% { opacity: 1; }
+    50% { transform: translateY(110px); }
+  }
+
+  /* ---------- Account Cards ---------- */
+  .accounts-list { display: flex; flex-direction: column; gap: 12px; }
+  .account-card {
+    background: var(--card-grad);
+    border: 1px solid var(--border);
+    border-radius: 18px; padding: 16px;
+    display: flex; flex-direction: column; gap: 14px;
+    transition: transform 0.18s ease, background 0.35s ease, border-color 0.35s ease;
+    position: relative; overflow: hidden;
+  }
+  .account-card::before {
+    content: ''; position: absolute; inset: 0; border-radius: 18px; padding: 1px;
+    background: linear-gradient(180deg, var(--card-top-shine), transparent 45%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  .account-card:active { transform: scale(0.99); }
+  .acc-header { display: flex; align-items: center; gap: 12px; }
+  .acc-avatar {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 800; color: #fff;
+    flex-shrink: 0; letter-spacing: -0.5px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 3px 10px rgba(0,0,0,0.22);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+  }
+  .acc-meta { flex: 1; min-width: 0; }
+  .acc-name {
+    font-size: 14.5px; font-weight: 600; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    line-height: 1.25;
+  }
+  .acc-issuer {
+    font-size: 12px; color: var(--text-muted); font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+  .acc-menu {
+    background: transparent; border: none; color: var(--text-muted);
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+  }
+  .acc-menu:hover { background: rgba(255,71,87,0.1); color: var(--danger); }
+  .acc-menu svg { width: 16px; height: 16px; }
+  .acc-body { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  .acc-code {
+    font-family: 'SF Mono', 'JetBrains Mono', 'Roboto Mono', ui-monospace, monospace;
+    font-size: 28px; font-weight: 700; letter-spacing: 3px;
+    color: var(--text); cursor: pointer; transition: all 0.18s ease;
+    font-variant-numeric: tabular-nums; user-select: none; padding: 2px 0;
+  }
+  .acc-code.copied { color: var(--success); transform: scale(1.02); }
+  .acc-code:active { transform: scale(0.98); }
+  .ring-wrap { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+  .ring-wrap svg { transform: rotate(-90deg); display: block; }
+  .ring-track { stroke: var(--ring-track); }
+  .ring-progress {
+    transition: stroke-dashoffset 0.9s linear, stroke 0.4s ease;
+    stroke-linecap: round;
+  }
+  .ring-num {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 11.5px; font-weight: 700; color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Empty State ---------- */
+  .empty-state {
+    text-align: center; padding: 50px 24px 20px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .empty-icon {
+    width: 88px; height: 88px; border-radius: 28px;
+    background: var(--card-grad);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary); margin-bottom: 22px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.14), inset 0 1px 0 var(--card-top-shine);
+    position: relative;
+  }
+  .empty-icon::after {
+    content: ''; position: absolute; inset: -20px;
+    background: radial-gradient(circle, var(--primary-glow), transparent 70%);
+    opacity: 0.4; z-index: -1; border-radius: 50%;
+  }
+  .empty-icon svg { width: 40px; height: 40px; }
+  .empty-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .empty-text { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; max-width: 280px; margin-bottom: 22px; }
+
+  /* ---------- Footer ---------- */
+  .app-footer {
+    margin-top: auto;
+    padding: 40px 20px calc(110px + env(safe-area-inset-bottom));
+    text-align: center; font-size: 12.5px;
+    color: var(--text-muted); font-weight: 500;
+    line-height: 1.6; transition: color 0.35s ease;
+  }
+  .app-footer .heart {
+    color: #e11d48; display: inline-block;
+    animation: heartbeat 1.8s ease-in-out infinite;
+    transform-origin: center;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.2); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.15); }
+    60% { transform: scale(1); }
+  }
+  .app-footer a {
+    color: var(--primary); text-decoration: underline;
+    text-underline-offset: 3px; text-decoration-thickness: 1.5px;
+    font-weight: 700; transition: color 0.15s ease;
+  }
+  .app-footer a:hover { color: var(--primary-2); }
+  .app-footer .fb {
+    color: var(--text-dim); text-decoration: underline;
+    text-underline-offset: 3px; font-weight: 500;
+  }
+  .app-footer .fb:hover { color: var(--primary); }
+
+  /* ---------- Bottom Nav ---------- */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 620px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    background: var(--nav-bg);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-top: 1px solid var(--border);
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    z-index: 100;
+    transition: background 0.35s ease, border-color 0.35s ease;
+  }
+  .nav-item {
+    background: none; border: none;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 9px 4px 7px; color: var(--text-muted);
+    cursor: pointer; font-family: inherit; border-radius: 12px;
+    transition: all 0.2s ease; position: relative;
+  }
+  .nav-item svg { width: 21px; height: 21px; transition: all 0.2s ease; }
+  .nav-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.2px; }
+  .nav-item.active { color: var(--primary); }
+  .nav-item.active svg { transform: translateY(-1px); filter: drop-shadow(0 3px 8px var(--primary-glow)); }
+  .nav-item:active { background: var(--primary-soft); }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; bottom: 100px; left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--surface-4); color: var(--text);
+    padding: 12px 20px; border-radius: 14px;
+    font-size: 13.5px; font-weight: 600;
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.35), inset 0 1px 0 var(--card-top-shine);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), background 0.35s;
+    z-index: 9999; pointer-events: none;
+    max-width: 90vw; text-align: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { border-color: rgba(255,71,87,0.5); color: var(--danger); }
+  .toast.success { border-color: var(--primary); color: var(--primary); }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none; align-items: flex-end; justify-content: center;
+    z-index: 1000; padding: 0;
+  }
+  .modal-overlay.show { display: flex; animation: fadeIn 0.2s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--modal-bg);
+    border-top-left-radius: 24px; border-top-right-radius: 24px;
+    padding: 8px 22px 26px; width: 100%; max-width: 620px;
+    border-top: 1px solid var(--border-strong);
+    animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+    max-height: 90vh; overflow-y: auto;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: none; }
+  }
+  .modal-handle {
+    width: 40px; height: 4px; background: var(--border-strong);
+    border-radius: 4px; margin: 8px auto 18px;
+  }
+  .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .modal-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+  .modal-actions .btn { margin: 0; }
+  @media (min-width: 640px) {
+    .modal-overlay { align-items: center; padding: 20px; }
+    .modal { border-radius: 22px; border: 1px solid var(--border-strong); padding: 8px 24px 24px; }
+    .modal-handle { display: none; }
+    .modal::before { content: ''; display: block; height: 20px; }
+  }
+
+  /* ---------- Lock / Setup Screen ---------- */
+  .lock-screen {
+    position: fixed; inset: 0;
+    background: var(--lock-bg);
+    z-index: 5000;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 32px 24px;
+    animation: fadeIn 0.3s;
+  }
+  .lock-screen.show { display: flex; }
+  .lock-content {
+    width: 100%; max-width: 380px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+  .lock-logo {
+    width: 72px; height: 72px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, var(--primary-2), var(--primary));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary-contrast);
+    box-shadow: 0 12px 40px var(--primary-glow), inset 0 1px 0 rgba(255,255,255,0.3);
+    margin-bottom: 22px;
+    animation: logoFloat 3s ease-in-out infinite;
+  }
+  @keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .lock-logo svg { width: 38px; height: 38px; }
+  .lock-title {
+    font-size: 22px; font-weight: 800;
+    letter-spacing: -0.4px; color: var(--text);
+    margin-bottom: 6px;
+  }
+  .lock-sub {
+    font-size: 13.5px; color: var(--text-muted);
+    font-weight: 500; margin-bottom: 26px;
+    line-height: 1.5; max-width: 280px;
+  }
+  .lock-form {
+    width: 100%;
+    display: flex; flex-direction: column; gap: 11px;
+  }
+  .lock-input {
+    text-align: center;
+    font-size: 17px;
+    letter-spacing: 6px;
+    padding: 15px 16px;
+    font-weight: 600;
+  }
+  .lock-input::placeholder {
+    letter-spacing: 1px;
+    font-weight: 400;
+    font-size: 14px;
+  }
+  .lock-error {
+    font-size: 12.5px; color: var(--danger);
+    font-weight: 600; min-height: 16px;
+    letter-spacing: 0;
+  }
+  .lock-hint {
+    font-size: 11.5px; color: var(--text-dim);
+    line-height: 1.6; margin-top: 6px;
+    max-width: 320px;
+  }
+  .lock-footer {
+    font-size: 11px; color: var(--text-dim);
+    margin-top: 28px; font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+    letter-spacing: 0.3px;
+  }
+  .lock-footer svg { width: 12px; height: 12px; color: var(--primary); }
+  .lock-theme-toggle {
+    position: absolute;
+    top: 20px; right: 20px;
+    z-index: 10;
+  }
+  .lock-legal {
+    font-size: 11px; color: var(--text-dim);
+    margin-top: 18px; line-height: 1.5;
+    max-width: 320px;
+  }
+  .lock-legal a { color: var(--primary); text-decoration: none; }
+
+  /* ---------- Utilities ---------- */
+  .hidden { display: none !important; }
+  .file-input { display: none; }
+  .spin { animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- ============ LOCK / SETUP SCREEN ============ -->
+<div class="lock-screen" id="lockScreen">
+  <button class="icon-action theme-toggle lock-theme-toggle" id="lockThemeToggle" aria-label="Toggle theme">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+
+  <div class="lock-content">
+    <div class="lock-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+    </div>
+    <h2 class="lock-title" id="lockTitle">Authenticator</h2>
+    <p class="lock-sub" id="lockSub">Enter your PIN to unlock</p>
+
+    <!-- Unlock form -->
+    <div class="lock-form" id="unlockForm">
+      <input type="password" id="unlockPin" class="input lock-input" placeholder="Enter PIN" autocomplete="current-password" spellcheck="false">
+      <p class="lock-error" id="unlockError"></p>
+      <button class="btn btn-primary" id="unlockBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Unlock Vault
+      </button>
+      <p class="lock-hint">Your secrets are encrypted with AES-256-GCM. Without this PIN, the data cannot be recovered.</p>
+    </div>
+
+    <!-- Setup form -->
+    <div class="lock-form hidden" id="setupForm">
+      <input type="password" id="setupPin" class="input lock-input" placeholder="New PIN or password" autocomplete="new-password" spellcheck="false">
+      <input type="password" id="setupPin2" class="input lock-input" placeholder="Confirm PIN" autocomplete="new-password" spellcheck="false">
+      <p class="lock-error" id="setupError"></p>
+      <button class="btn btn-primary" id="setupBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Create Encrypted Vault
+      </button>
+      <p class="lock-hint">Use a PIN (4+ digits) or a strong password. All your 2FA secrets will be encrypted with AES-256-GCM on this device — nothing is ever sent to a server.</p>
+    </div>
+
+    <p class="lock-footer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      AES-256-GCM · PBKDF2 150k · On-device only
+    </p>
+  </div>
+</div>
+
+<!-- ============ APP FRAME ============ -->
+<div class="app-frame" id="appFrame" style="visibility:hidden;">
+
+  <header class="app-bar">
+    <div class="brand">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Authenticator</h1>
+        <span class="brand-sub" id="brandSub">Secure • Offline</span>
+      </div>
+    </div>
+
+    <div class="app-bar-actions">
+      <button class="icon-action lock-action" id="lockNowBtn" aria-label="Lock vault" title="Lock vault">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </button>
+      <button class="icon-action theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- ---------- ADD PANEL ---------- -->
+    <section class="panel" id="panel-scan">
+      <div class="section-title">Add Account</div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+            <rect x="7" y="7" width="3.2" height="3.2" rx="0.6"/>
+            <rect x="13.8" y="7" width="3.2" height="3.2" rx="0.6"/>
+            <rect x="7" y="13.8" width="3.2" height="3.2" rx="0.6"/>
+            <rect x="13.8" y="13.8" width="3.2" height="3.2" rx="0.6"/>
+          </svg>
+          Scan QR Code
+        </div>
+        <p class="card-desc">Point your camera at the QR code from Google Authenticator, Authy, or any TOTP app.</p>
+        <button class="btn btn-primary" id="scanBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          <span id="scanBtnText">Open Camera</span>
+        </button>
+        <div class="scanner-shell" id="scannerShell">
+          <div id="reader"></div>
+          <div class="scanner-overlay">
+            <div class="scan-frame"><span></span><div class="scan-line"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Enter Manually
+        </div>
+        <p class="card-desc">Paste your secret key or an <code style="color:var(--primary);font-size:12px;">otpauth://</code> link.</p>
+
+        <div class="field">
+          <label class="field-label">Secret Key</label>
+          <input class="input" type="text" id="secretInput" placeholder="JBSWY3DPEHPK3PXP" autocomplete="off" spellcheck="false" autocapitalize="characters">
+        </div>
+        <div class="field">
+          <label class="field-label">Account Name</label>
+          <input class="input" type="text" id="nameInput" placeholder="e.g. me@example.com" autocomplete="off">
+        </div>
+        <button class="btn btn-primary" id="addManual" style="margin-top:14px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          Add Account
+        </button>
+      </div>
+    </section>
+
+    <!-- ---------- CODES PANEL ---------- -->
+    <section class="panel active" id="panel-list">
+      <div class="section-title" id="listTitle">Your Codes</div>
+      <div class="accounts-list" id="accounts"></div>
+
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <div class="empty-title">No accounts yet</div>
+        <p class="empty-text">Add your first 2FA account to start generating secure codes. Everything stays on your device.</p>
+        <button class="btn btn-primary" id="emptyCta" style="width:auto;padding:12px 24px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          Add Account
+        </button>
+      </div>
+    </section>
+
+    <!-- ---------- BACKUP PANEL ---------- -->
+    <section class="panel" id="panel-backup">
+      <div class="section-title">Vault Security</div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Security
+        </div>
+        <p class="card-desc">Your vault is encrypted with AES-256-GCM on this device. Auto-lock triggers when you're inactive.</p>
+        <div class="field">
+          <label class="field-label">Auto-lock after</label>
+          <select class="input" id="autoLockSelect" style="cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2214%22 height=%2214%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%237ea79a%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><polyline points=%226 9 12 15 18 9%22/></svg>');background-repeat:no-repeat;background-position:right 15px center;padding-right:40px;">
+            <option value="60">1 minute</option>
+            <option value="300" selected>5 minutes</option>
+            <option value="900">15 minutes</option>
+            <option value="1800">30 minutes</option>
+            <option value="0">Never</option>
+          </select>
+        </div>
+        <div class="btn-group" style="margin-top:14px;">
+          <button class="btn btn-secondary" id="changePinBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Change PIN
+          </button>
+          <button class="btn btn-ghost" id="lockNowBtn2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Lock Vault Now
+          </button>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:8px;">Backup & Restore</div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="M7 10l5 5 5-5"/>
+            <path d="M12 15V3"/>
+          </svg>
+          Export Backup
+        </div>
+        <p class="card-desc">Download all your accounts as a file. Keep it safe — anyone with the file can access your 2FA.</p>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="exportPlain">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <path d="M14 2v6h6"/>
+            </svg>
+            Plain JSON Backup
+          </button>
+          <button class="btn btn-secondary" id="exportEncrypted">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Encrypted Backup
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="M17 8l-5-5-5 5"/>
+            <path d="M12 3v12"/>
+          </svg>
+          Import Backup
+        </div>
+        <p class="card-desc">Restore accounts from a previous backup file. Duplicate accounts are skipped automatically.</p>
+        <input type="file" id="importFile" class="file-input" accept=".json,application/json">
+        <button class="btn btn-secondary" id="importBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          Choose File
+        </button>
+      </div>
+
+      <div class="card danger">
+        <div class="card-title danger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          Danger Zone
+        </div>
+        <p class="card-desc">Permanently delete all accounts and the vault from this browser. Make sure you have a backup first.</p>
+        <button class="btn btn-danger" id="clearAll">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+          </svg>
+          Delete All Data
+        </button>
+      </div>
+    </section>
+
+    <!-- ---------- FOOTER ---------- -->
+    <footer class="app-footer">
+      Made with <span class="heart">❤</span> by
+      <a href="https://fb.com/aanNEION" target="_blank" rel="noopener">Neion</a>
+      (<a href="https://fb.com/aanNEION" target="_blank" rel="noopener" class="fb">fb.com/aanNEION</a>)
+    </footer>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-item" data-tab="scan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 8v8M8 12h8"/>
+      </svg>
+      <span class="nav-label">Add</span>
+    </button>
+    <button class="nav-item active" data-tab="list">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+      </svg>
+      <span class="nav-label">Codes</span>
+    </button>
+    <button class="nav-item" data-tab="backup">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 8v13H3V8"/>
+        <path d="M1 3h22v5H1z"/>
+        <path d="M10 12h4"/>
+      </svg>
+      <span class="nav-label">Backup</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ============ PASSWORD MODAL (for backup encryption) ============ -->
+<div class="modal-overlay" id="pwModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 class="modal-title" id="pwTitle">Password</h3>
+    <p class="modal-desc" id="pwSub"></p>
+    <div class="field">
+      <label class="field-label">Password</label>
+      <input class="input" type="password" id="pwInput" placeholder="••••••••" autocomplete="new-password">
+    </div>
+    <div class="field hidden" id="pwConfirmField">
+      <label class="field-label">Confirm Password</label>
+      <input class="input" type="password" id="pwConfirm" placeholder="••••••••" autocomplete="new-password">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="pwCancel">Cancel</button>
+      <button class="btn btn-primary" id="pwOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script>
+/* ==================== THEME ==================== */
+const THEME_KEY = 'authenticator_theme';
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem(THEME_KEY, theme);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = theme === 'dark' ? '#071411' : '#eff7f3';
+}
+(function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === 'light' || saved === 'dark') { applyTheme(saved); return; }
+  const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+  applyTheme(prefersLight ? 'light' : 'dark');
+})();
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+document.getElementById('themeToggle').onclick = toggleTheme;
+document.getElementById('lockThemeToggle').onclick = toggleTheme;
+
+/* ==================== TOTP ==================== */
+const B32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+function base32Decode(str) {
+  str = str.replace(/=+$/,'').replace(/[\s-]/g,'').toUpperCase();
+  let bits = 0, value = 0, out = [];
+  for (let i = 0; i < str.length; i++) {
+    const idx = B32.indexOf(str[i]);
+    if (idx === -1) continue;
+    value = (value << 5) | idx;
+    bits += 5;
+    if (bits >= 8) { out.push((value >>> (bits - 8)) & 0xff); bits -= 8; }
+  }
+  return new Uint8Array(out);
+}
+async function hmacSha1(key, msg) {
+  const k = await crypto.subtle.importKey('raw', key, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+  return new Uint8Array(await crypto.subtle.sign('HMAC', k, msg));
+}
+async function totp(secret, period = 30, digits = 6) {
+  const key = base32Decode(secret);
+  const counter = Math.floor(Date.now() / 1000 / period);
+  const buf = new ArrayBuffer(8);
+  const view = new DataView(buf);
+  view.setUint32(0, Math.floor(counter / 0x100000000));
+  view.setUint32(4, counter >>> 0);
+  const hmac = await hmacSha1(key, buf);
+  const offset = hmac[hmac.length - 1] & 0x0f;
+  const code = ((hmac[offset] & 0x7f) << 24) |
+               ((hmac[offset+1] & 0xff) << 16) |
+               ((hmac[offset+2] & 0xff) << 8) |
+               (hmac[offset+3] & 0xff);
+  return String(code % Math.pow(10, digits)).padStart(digits, '0');
+}
+
+/* ==================== CRYPTO ==================== */
+const b64enc = (bytes) => { let s=''; for (let i=0;i<bytes.length;i++) s+=String.fromCharCode(bytes[i]); return btoa(s); };
+const b64dec = (str) => { const bin=atob(str); const a=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) a[i]=bin.charCodeAt(i); return a; };
+
+async function deriveKey(password, salt, iterations = 150000) {
+  const enc = new TextEncoder();
+  const km = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations, hash: 'SHA-256' },
+    km, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+  );
+}
+async function aesEncrypt(key, data) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder();
+  const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(JSON.stringify(data)));
+  return { iv: b64enc(iv), data: b64enc(new Uint8Array(cipher)) };
+}
+async function aesDecrypt(key, ivB64, dataB64) {
+  const plain = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv: b64dec(ivB64) }, key, b64dec(dataB64)
+  );
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+
+/* ==================== VAULT (encrypted storage) ==================== */
+const VAULT_KEY = 'authenticator_vault_v2';
+const LEGACY_KEY = 'twofa_accounts_v1';
+const AUTOLOCK_KEY = 'authenticator_autolock';
+
+const session = {
+  unlocked: false,
+  key: null,
+  salt: null,
+  accounts: [],
+  lastActivity: Date.now()
+};
+
+function vaultExists() {
+  try { return !!localStorage.getItem(VAULT_KEY); }
+  catch { return false; }
+}
+function getVaultMeta() {
+  try { return JSON.parse(localStorage.getItem(VAULT_KEY)); }
+  catch { return null; }
+}
+
+async function createVault(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const key = await deriveKey(password, salt);
+  session.key = key;
+  session.salt = salt;
+  session.accounts = [];
+  // Migrate legacy plaintext if present
+  try {
+    const legacy = JSON.parse(localStorage.getItem(LEGACY_KEY) || 'null');
+    if (Array.isArray(legacy) && legacy.length) {
+      session.accounts = legacy.map(a => ({
+        id: Date.now() + Math.random().toString(36).slice(2),
+        name: a.name || 'Unnamed',
+        issuer: a.issuer || '',
+        secret: String(a.secret || '').replace(/[\s-]/g,'').toUpperCase()
+      })).filter(a => a.secret.length >= 8);
+      localStorage.removeItem(LEGACY_KEY);
+    }
+  } catch {}
+  session.unlocked = true;
+  await persistVault();
+}
+
+async function unlockVault(password) {
+  const meta = getVaultMeta();
+  if (!meta) return false;
+  const salt = b64dec(meta.salt);
+  const key = await deriveKey(password, salt);
+  try {
+    if (meta.iv && meta.data) {
+      const accounts = await aesDecrypt(key, meta.iv, meta.data);
+      session.accounts = Array.isArray(accounts) ? accounts : [];
+    } else {
+      session.accounts = [];
+    }
+    session.key = key;
+    session.salt = salt;
+    session.unlocked = true;
+    return true;
+  } catch { return false; }
+}
+
+async function persistVault() {
+  if (!session.unlocked || !session.key) return;
+  const blob = await aesEncrypt(session.key, session.accounts);
+  localStorage.setItem(VAULT_KEY, JSON.stringify({
+    v: 2,
+    salt: b64enc(session.salt),
+    iv: blob.iv,
+    data: blob.data
+  }));
+}
+
+function lockVault() {
+  session.unlocked = false;
+  session.key = null;
+  session.salt = null;
+  session.accounts = [];
+  stopScannerSafe();
+  if (ticker) { clearInterval(ticker); ticker = null; }
+  showLockScreen('unlock');
+}
+
+async function changePin(newPassword) {
+  if (!session.unlocked) return false;
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const key = await deriveKey(newPassword, salt);
+  session.salt = salt;
+  session.key = key;
+  await persistVault();
+  return true;
+}
+
+/* ==================== UI HELPERS ==================== */
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+const accountsEl = $('#accounts');
+const emptyEl = $('#emptyState');
+const toastEl = $('#toast');
+const brandSub = $('#brandSub');
+const listTitle = $('#listTitle');
+const lockScreen = $('#lockScreen');
+const appFrame = $('#appFrame');
+
+let toastTimer;
+function toast(msg, type = '') {
+  clearTimeout(toastTimer);
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show ' + type;
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2400);
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function avatarStyle(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  const hue = Math.abs(hash) % 360;
+  return `linear-gradient(135deg, hsl(${hue},68%,52%), hsl(${(hue+35)%360},62%,42%))`;
+}
+function initial(str) { return (str || '?').trim().charAt(0).toUpperCase() || '?'; }
+
+/* ==================== LOCK SCREEN / SETUP ==================== */
+function showLockScreen(mode) {
+  lockScreen.classList.add('show');
+  appFrame.style.visibility = 'hidden';
+  const isSetup = mode === 'setup';
+  $('#unlockForm').classList.toggle('hidden', isSetup);
+  $('#setupForm').classList.toggle('hidden', !isSetup);
+  $('#lockTitle').textContent = isSetup ? 'Create your vault' : 'Welcome back';
+  $('#lockSub').textContent = isSetup
+    ? 'Set a PIN to encrypt your 2FA secrets on this device'
+    : 'Enter your PIN to unlock your encrypted vault';
+  setTimeout(() => {
+    (isSetup ? $('#setupPin') : $('#unlockPin')).focus();
+  }, 350);
+  $('#unlockError').textContent = '';
+  $('#setupError').textContent = '';
+  $('#unlockPin').value = '';
+  $('#setupPin').value = '';
+  $('#setupPin2').value = '';
+}
+
+function showApp() {
+  lockScreen.classList.remove('show');
+  appFrame.style.visibility = 'visible';
+  session.lastActivity = Date.now();
+  render();
+  if (getAccounts().length === 0) switchTab('scan');
+  else switchTab('list');
+}
+
+/* Unlock form */
+$('#unlockBtn').onclick = doUnlock;
+$('#unlockPin').onkeydown = (e) => { if (e.key === 'Enter') doUnlock(); };
+
+async function doUnlock() {
+  const pin = $('#unlockPin').value;
+  if (!pin) { $('#unlockError').textContent = 'Please enter your PIN'; return; }
+  const btn = $('#unlockBtn');
+  btn.disabled = true;
+  const originalHTML = btn.innerHTML;
+  btn.innerHTML = 'Unlocking…';
+  $('#unlockError').textContent = '';
+  // Allow UI to update before heavy PBKDF2
+  await new Promise(r => setTimeout(r, 50));
+  const ok = await unlockVault(pin);
+  btn.disabled = false;
+  btn.innerHTML = originalHTML;
+  if (ok) {
+    showApp();
+  } else {
+    $('#unlockError').textContent = 'Incorrect PIN. Try again.';
+    $('#unlockPin').value = '';
+    $('#unlockPin').focus();
+    // Shake animation
+    const inp = $('#unlockPin');
+    inp.animate([
+      { transform: 'translateX(0)' },
+      { transform: 'translateX(-8px)' },
+      { transform: 'translateX(8px)' },
+      { transform: 'translateX(-6px)' },
+      { transform: 'translateX(6px)' },
+      { transform: 'translateX(0)' }
+    ], { duration: 380, easing: 'ease-in-out' });
+  }
+}
+
+/* Setup form */
+$('#setupBtn').onclick = doSetup;
+$('#setupPin2').onkeydown = (e) => { if (e.key === 'Enter') doSetup(); };
+
+async function doSetup() {
+  const p1 = $('#setupPin').value;
+  const p2 = $('#setupPin2').value;
+  if (!p1) { $('#setupError').textContent = 'Please enter a PIN or password'; return; }
+  if (p1.length < 4) { $('#setupError').textContent = 'Use at least 4 characters'; return; }
+  if (p1 !== p2) { $('#setupError').textContent = 'PINs do not match'; return; }
+  const btn = $('#setupBtn');
+  btn.disabled = true;
+  const originalHTML = btn.innerHTML;
+  btn.innerHTML = 'Creating vault…';
+  $('#setupError').textContent = '';
+  await new Promise(r => setTimeout(r, 50));
+  try {
+    await createVault(p1);
+    showApp();
+    toast('Vault created & encrypted', 'success');
+  } catch (e) {
+    console.error(e);
+    $('#setupError').textContent = 'Failed to create vault';
+  }
+  btn.disabled = false;
+  btn.innerHTML = originalHTML;
+}
+
+/* Manual lock buttons */
+$('#lockNowBtn').onclick = () => lockVault();
+$('#lockNowBtn2').onclick = () => lockVault();
+
+/* ==================== AUTO-LOCK ==================== */
+function recordActivity() { session.lastActivity = Date.now(); }
+['click','keydown','touchstart','mousemove','scroll'].forEach(ev =>
+  document.addEventListener(ev, recordActivity, { passive: true })
+);
+setInterval(() => {
+  if (!session.unlocked) return;
+  const t = parseInt(localStorage.getItem(AUTOLOCK_KEY) || '300', 10);
+  if (t > 0 && Date.now() - session.lastActivity > t * 1000) lockVault();
+}, 5000);
+
+/* Auto-lock select */
+const autoLockSelect = $('#autoLockSelect');
+autoLockSelect.value = localStorage.getItem(AUTOLOCK_KEY) || '300';
+autoLockSelect.onchange = () => {
+  localStorage.setItem(AUTOLOCK_KEY, autoLockSelect.value);
+  toast('Auto-lock updated', 'success');
+};
+
+/* ==================== CHANGE PIN ==================== */
+$('#changePinBtn').onclick = async () => {
+  const np = await askPassword({
+    title: 'Change PIN',
+    sub: 'Enter a new PIN or password. Your vault will be re-encrypted with it.',
+    confirm: true,
+    confirmLabel: 'New PIN'
+  });
+  if (!np) return;
+  const btn = $('#changePinBtn');
+  btn.disabled = true;
+  await changePin(np);
+  btn.disabled = false;
+  toast('PIN changed successfully', 'success');
+};
+
+/* ==================== NAVIGATION ==================== */
+function switchTab(tab) {
+  if (!session.unlocked) return;
+  $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.tab === tab));
+  $$('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+  if (tab === 'list') render();
+  if (tab !== 'scan') stopScannerSafe();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+$$('.nav-item').forEach(n => n.onclick = () => switchTab(n.dataset.tab));
+$('#emptyCta').onclick = () => switchTab('scan');
+
+/* ==================== ACCOUNTS (in-memory only) ==================== */
+function getAccounts() { return session.accounts; }
+async function setAccounts(list) {
+  session.accounts = list;
+  await persistVault();
+}
+
+async function addAccount({ name, issuer, secret }) {
+  if (!session.unlocked) return false;
+  secret = secret.replace(/[\s-]/g,'').toUpperCase();
+  if (secret.length < 8) { toast('Invalid secret key', 'error'); return false; }
+  if (session.accounts.some(a => a.secret === secret)) { toast('Account already exists', 'error'); return false; }
+  session.accounts.push({
+    id: Date.now() + Math.random().toString(36).slice(2),
+    name: name || 'Unnamed',
+    issuer: issuer || '',
+    secret
+  });
+  await persistVault();
+  toast('Account added', 'success');
+  return true;
+}
+
+function parseOtpauth(uri) {
+  try {
+    const u = new URL(uri);
+    if (u.protocol !== 'otpauth:') return null;
+    const params = new URLSearchParams(u.search);
+    const secret = params.get('secret');
+    if (!secret) return null;
+    const label = decodeURIComponent(u.pathname.replace(/^\/+/,''));
+    let issuer = params.get('issuer') || '';
+    let name = label;
+    if (label.includes(':')) {
+      const [iss, nm] = label.split(':');
+      issuer = issuer || iss.trim();
+      name = nm.trim();
+    }
+    return { name, issuer, secret };
+  } catch { return null; }
+}
+
+$('#addManual').onclick = async () => {
+  if (!session.unlocked) return;
+  const raw = $('#secretInput').value.trim();
+  if (!raw) { toast('Please enter a secret key', 'error'); return; }
+  let data;
+  if (raw.toLowerCase().startsWith('otpauth://')) {
+    data = parseOtpauth(raw);
+    if (!data) { toast('Invalid otpauth link', 'error'); return; }
+  } else {
+    data = { name: $('#nameInput').value.trim() || 'Unnamed', issuer: '', secret: raw };
+  }
+  if (await addAccount(data)) {
+    $('#secretInput').value = '';
+    $('#nameInput').value = '';
+    switchTab('list');
+  }
+};
+
+/* ==================== SCANNER ==================== */
+let stream = null, rafId = null;
+const shell = $('#scannerShell');
+const reader = $('#reader');
+const scanBtn = $('#scanBtn');
+const scanBtnText = $('#scanBtnText');
+
+async function startScanner() {
+  if (!session.unlocked) return;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    shell.classList.add('active');
+    reader.innerHTML = '<video id="vid" playsinline muted></video>';
+    const video = $('#vid');
+    video.srcObject = stream;
+    await video.play();
+    scanBtnText.textContent = 'Stop Camera';
+    scanBtn.onclick = stopScanner;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const tick = () => {
+      if (!stream) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
+        const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(img.data, img.width, img.height);
+        if (code && code.data) { handleScan(code.data); return; }
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    tick();
+  } catch (e) {
+    toast('Camera access denied', 'error');
+    console.error(e);
+  }
+}
+function stopScanner() {
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  shell.classList.remove('active');
+  reader.innerHTML = '';
+  scanBtnText.textContent = 'Open Camera';
+  scanBtn.onclick = startScanner;
+}
+function stopScannerSafe() { try { stopScanner(); } catch {} }
+async function handleScan(text) {
+  const data = parseOtpauth(text);
+  if (!data) { toast('Not a valid TOTP QR code', 'error'); return; }
+  if (await addAccount(data)) {
+    stopScanner();
+    switchTab('list');
+  }
+}
+scanBtn.onclick = startScanner;
+
+/* ==================== RENDER ==================== */
+let ticker = null;
+function render() {
+  if (!session.unlocked) return;
+  const list = session.accounts;
+  accountsEl.innerHTML = '';
+  brandSub.textContent = list.length === 0 ? 'Secure • Offline' : (list.length === 1 ? '1 account' : list.length + ' accounts');
+  listTitle.textContent = list.length === 0 ? 'Your Codes' : `Your Codes (${list.length})`;
+
+  if (!list.length) {
+    emptyEl.style.display = 'flex';
+    if (ticker) { clearInterval(ticker); ticker = null; }
+    return;
+  }
+  emptyEl.style.display = 'none';
+  list.forEach(acc => accountsEl.appendChild(buildCard(acc)));
+  updateCodes();
+  if (ticker) clearInterval(ticker);
+  ticker = setInterval(updateCodes, 1000);
+}
+
+function buildCard(acc) {
+  const card = document.createElement('div');
+  card.className = 'account-card';
+  card.dataset.id = acc.id;
+  const display = acc.issuer ? acc.issuer : acc.name;
+  const secondary = acc.issuer ? acc.name : '';
+  const avInit = initial(acc.issuer || acc.name);
+  const avStyle = avatarStyle(acc.issuer || acc.name);
+
+  card.innerHTML = `
+    <div class="acc-header">
+      <div class="acc-avatar" style="background:${avStyle}">${escapeHtml(avInit)}</div>
+      <div class="acc-meta">
+        <div class="acc-name">${escapeHtml(display)}</div>
+        ${secondary ? `<div class="acc-issuer">${escapeHtml(secondary)}</div>` : ''}
+      </div>
+      <button class="acc-menu" data-del="${acc.id}" aria-label="Delete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+        </svg>
+      </button>
+    </div>
+    <div class="acc-body">
+      <div class="acc-code" data-code="${acc.id}" title="Tap to copy">--- ---</div>
+      <div class="ring-wrap">
+        <svg width="44" height="44" viewBox="0 0 44 44">
+          <circle class="ring-track" cx="22" cy="22" r="18" stroke-width="3.5" fill="none"/>
+          <circle class="ring-progress" cx="22" cy="22" r="18" stroke-width="3.5" fill="none"
+                  data-ring="${acc.id}"
+                  stroke-dasharray="113.1" stroke-dashoffset="0"/>
+        </svg>
+        <div class="ring-num" data-sec="${acc.id}">30</div>
+      </div>
+    </div>
+  `;
+
+  card.querySelector('[data-del]').onclick = async (e) => {
+    e.stopPropagation();
+    if (confirm('Delete this account?')) {
+      await setAccounts(session.accounts.filter(a => a.id !== acc.id));
+      render();
+      toast('Account deleted');
+    }
+  };
+
+  const codeEl = card.querySelector('[data-code]');
+  codeEl.onclick = () => {
+    if (!codeEl.dataset.value) return;
+    navigator.clipboard.writeText(codeEl.dataset.value).then(() => {
+      codeEl.classList.add('copied');
+      toast('Code copied', 'success');
+      setTimeout(() => codeEl.classList.remove('copied'), 700);
+    }).catch(() => toast('Copy failed', 'error'));
+  };
+  return card;
+}
+
+async function updateCodes() {
+  if (!session.unlocked) return;
+  const remaining = 30 - (Math.floor(Date.now() / 1000) % 30);
+  const list = session.accounts;
+  for (const acc of list) {
+    const codeEl = document.querySelector(`[data-code="${acc.id}"]`);
+    if (!codeEl) continue;
+    try {
+      const code = await totp(acc.secret);
+      codeEl.dataset.value = code;
+      const fmt = code.length === 6 ? code.slice(0,3) + ' ' + code.slice(3) : code;
+      if (codeEl.textContent !== fmt) codeEl.textContent = fmt;
+    } catch { codeEl.textContent = 'ERROR'; }
+
+    const ring = document.querySelector(`[data-ring="${acc.id}"]`);
+    const secEl = document.querySelector(`[data-sec="${acc.id}"]`);
+    if (ring) {
+      const C = 113.1;
+      ring.style.strokeDashoffset = C * (1 - remaining / 30);
+      ring.style.stroke = remaining <= 5 ? 'var(--danger)' : remaining <= 10 ? 'var(--warning)' : 'var(--primary)';
+    }
+    if (secEl) {
+      secEl.textContent = remaining;
+      secEl.style.color = remaining <= 5 ? 'var(--danger)' : remaining <= 10 ? 'var(--warning)' : '';
+    }
+  }
+}
+
+/* ==================== BACKUP ==================== */
+function download(filename, text) {
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+function todayStr() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+$('#exportPlain').onclick = () => {
+  if (!session.unlocked) return;
+  const list = session.accounts;
+  if (!list.length) { toast('No accounts to export', 'error'); return; }
+  const payload = {
+    app: 'authenticator', version: 1, encrypted: false,
+    exportedAt: new Date().toISOString(),
+    accounts: list.map(({ name, issuer, secret }) => ({ name, issuer, secret }))
+  };
+  download(`authenticator-backup-${todayStr()}.json`, JSON.stringify(payload, null, 2));
+  toast('Backup downloaded', 'success');
+};
+
+$('#exportEncrypted').onclick = async () => {
+  if (!session.unlocked) return;
+  const list = session.accounts;
+  if (!list.length) { toast('No accounts to export', 'error'); return; }
+  const pw = await askPassword({
+    title: 'Encrypted Backup',
+    sub: 'Choose a strong password. Without it, the backup cannot be restored.',
+    confirm: true
+  });
+  if (!pw) return;
+  try {
+    const accounts = list.map(({ name, issuer, secret }) => ({ name, issuer, secret }));
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const key = await deriveKey(pw, salt);
+    const blob = await aesEncrypt(key, accounts);
+    const payload = {
+      app: 'authenticator', version: 1, encrypted: true,
+      salt: b64enc(salt), iv: blob.iv, data: blob.data,
+      exportedAt: new Date().toISOString()
+    };
+    download(`authenticator-backup-encrypted-${todayStr()}.json`, JSON.stringify(payload, null, 2));
+    toast('Encrypted backup downloaded', 'success');
+  } catch (e) {
+    console.error(e);
+    toast('Encryption failed', 'error');
+  }
+};
+
+async function mergeAccounts(incoming) {
+  let added = 0, skipped = 0;
+  for (const acc of incoming) {
+    if (!acc || !acc.secret) { skipped++; continue; }
+    const sec = String(acc.secret).replace(/[\s-]/g,'').toUpperCase();
+    if (sec.length < 8) { skipped++; continue; }
+    if (session.accounts.some(a => a.secret === sec)) { skipped++; continue; }
+    session.accounts.push({
+      id: Date.now() + Math.random().toString(36).slice(2) + added,
+      name: acc.name || 'Unnamed',
+      issuer: acc.issuer || '',
+      secret: sec
+    });
+    added++;
+  }
+  await persistVault();
+  return { added, skipped };
+}
+
+$('#importBtn').onclick = () => $('#importFile').click();
+$('#importFile').onchange = async (e) => {
+  if (!session.unlocked) return;
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  let payload;
+  try { payload = JSON.parse(await file.text()); }
+  catch { toast('Invalid file format', 'error'); return; }
+
+  let accounts;
+  if (payload && payload.encrypted === true) {
+    const pw = await askPassword({
+      title: 'Password Required',
+      sub: 'This backup is encrypted. Enter the password to restore it.',
+      confirm: false
+    });
+    if (!pw) return;
+    try {
+      const key = await deriveKey(pw, b64dec(payload.salt));
+      accounts = await aesDecrypt(key, payload.iv, payload.data);
+    } catch { toast('Wrong password or corrupted file', 'error'); return; }
+  } else if (payload && Array.isArray(payload.accounts)) {
+    accounts = payload.accounts;
+  } else if (Array.isArray(payload)) {
+    accounts = payload;
+  } else {
+    toast('Unrecognized backup file', 'error'); return;
+  }
+  if (!Array.isArray(accounts)) { toast('Invalid format', 'error'); return; }
+  const { added, skipped } = await mergeAccounts(accounts);
+  toast(`Restored ${added}${skipped ? ` • ${skipped} skipped` : ''}`, 'success');
+  switchTab('list');
+};
+
+$('#clearAll').onclick = () => {
+  if (!session.unlocked) return;
+  const list = session.accounts;
+  if (!list.length) { toast('Nothing to delete', 'error'); return; }
+  if (!confirm(`Delete all ${list.length} accounts? This cannot be undone.`)) return;
+  if (!confirm('Really? This will also reset your vault.')) return;
+  localStorage.removeItem(VAULT_KEY);
+  localStorage.removeItem(LEGACY_KEY);
+  session.accounts = [];
+  session.unlocked = false;
+  session.key = null;
+  session.salt = null;
+  showLockScreen('setup');
+  toast('All data deleted', 'success');
+};
+
+/* ==================== PASSWORD MODAL ==================== */
+function askPassword({ title, sub, confirm = false, confirmLabel = 'Confirm Password' }) {
+  return new Promise(resolve => {
+    const overlay = $('#pwModal');
+    const input = $('#pwInput');
+    const confInput = $('#pwConfirm');
+    const confField = $('#pwConfirmField');
+    $('#pwTitle').textContent = title;
+    $('#pwSub').textContent = sub;
+    input.value = ''; confInput.value = '';
+    confField.classList.toggle('hidden', !confirm);
+    if (confirm) {
+      const lbl = confField.querySelector('.field-label');
+      if (lbl) lbl.textContent = confirmLabel;
+    }
+    overlay.classList.add('show');
+    setTimeout(() => input.focus(), 200);
+
+    const close = (val) => {
+      overlay.classList.remove('show');
+      $('#pwOk').onclick = null;
+      $('#pwCancel').onclick = null;
+      overlay.onclick = null;
+      input.onkeydown = null;
+      confInput.onkeydown = null;
+      resolve(val);
+    };
+    const submit = () => {
+      const p = input.value;
+      if (!p) { toast('Please enter a password', 'error'); return; }
+      if (confirm && p.length < 4) { toast('Use at least 4 characters', 'error'); return; }
+      if (confirm && p !== confInput.value) { toast('Passwords do not match', 'error'); return; }
+      close(p);
+    };
+    $('#pwOk').onclick = submit;
+    $('#pwCancel').onclick = () => close(null);
+    overlay.onclick = (e) => { if (e.target === overlay) close(null); };
+    input.onkeydown = (e) => { if (e.key === 'Enter') confirm ? confInput.focus() : submit(); };
+    confInput.onkeydown = (e) => { if (e.key === 'Enter') submit(); };
+  });
+}
+
+/* ==================== INIT ==================== */
+(function init() {
+  if (vaultExists()) {
+    showLockScreen('unlock');
+  } else {
+    showLockScreen('setup');
+  }
+})();
+</script>
+</body>
+</html>
