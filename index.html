@@ -111,12 +111,8 @@
 
   /* ---------- App Bar ---------- */
   .app-bar {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
     padding: 18px 20px 16px;
     background: var(--appbar-bg);
     backdrop-filter: blur(20px) saturate(180%);
@@ -126,8 +122,7 @@
   }
   .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
   .logo-mark {
-    width: 40px; height: 40px;
-    border-radius: 12px;
+    width: 40px; height: 40px; border-radius: 12px;
     background: linear-gradient(135deg, var(--primary-2), var(--primary));
     display: flex; align-items: center; justify-content: center;
     color: var(--primary-contrast);
@@ -155,15 +150,12 @@
   .app-bar-actions { display: flex; gap: 8px; align-items: center; }
 
   .icon-action {
-    width: 40px; height: 40px;
-    border-radius: 12px;
+    width: 40px; height: 40px; border-radius: 12px;
     background: var(--surface-3);
     border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    color: var(--text);
-    position: relative;
-    overflow: hidden;
+    cursor: pointer; color: var(--text);
+    position: relative; overflow: hidden;
     flex-shrink: 0;
     transition: background 0.2s, border-color 0.2s, transform 0.15s;
   }
@@ -183,10 +175,7 @@
   .app-main { flex: 1; padding: 20px 20px 0; display: flex; flex-direction: column; }
   .panel { display: none; }
   .panel.active { display: block; animation: panelIn 0.32s cubic-bezier(0.16,1,0.3,1); }
-  @keyframes panelIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: none; }
-  }
+  @keyframes panelIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   .section-title {
     font-size: 12.5px; font-weight: 700;
     color: var(--text-muted); text-transform: uppercase;
@@ -234,6 +223,53 @@
     background: var(--primary-soft);
     box-shadow: 0 0 0 4px var(--primary-soft);
   }
+
+  /* ---------- Toggle Switch ---------- */
+  .switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 4px 0 14px;
+  }
+  .switch-label-wrap { flex: 1; min-width: 0; }
+  .switch-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .switch-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .switch {
+    position: relative;
+    width: 48px;
+    height: 28px;
+    border-radius: 14px;
+    background: var(--surface-4);
+    border: 1px solid var(--border-strong);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.22s ease, border-color 0.22s ease;
+  }
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .switch.on {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+  .switch.on::after { transform: translateX(20px); }
 
   /* ---------- Buttons ---------- */
   .btn {
@@ -511,10 +547,7 @@
     animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
     max-height: 90vh; overflow-y: auto;
   }
-  @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: none; }
-  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
   .modal-handle {
     width: 40px; height: 4px; background: var(--border-strong);
     border-radius: 4px; margin: 8px auto 18px;
@@ -539,16 +572,17 @@
     align-items: center; justify-content: center;
     padding: 32px 24px;
     animation: fadeIn 0.3s;
+    overflow-y: auto;
   }
   .lock-screen.show { display: flex; }
   .lock-content {
     width: 100%; max-width: 380px;
     display: flex; flex-direction: column; align-items: center;
     text-align: center;
+    margin: auto 0;
   }
   .lock-logo {
-    width: 72px; height: 72px;
-    border-radius: 22px;
+    width: 72px; height: 72px; border-radius: 22px;
     background: linear-gradient(135deg, var(--primary-2), var(--primary));
     display: flex; align-items: center; justify-content: center;
     color: var(--primary-contrast);
@@ -569,23 +603,16 @@
   .lock-sub {
     font-size: 13.5px; color: var(--text-muted);
     font-weight: 500; margin-bottom: 26px;
-    line-height: 1.5; max-width: 280px;
+    line-height: 1.5; max-width: 300px;
   }
-  .lock-form {
-    width: 100%;
-    display: flex; flex-direction: column; gap: 11px;
-  }
+  .lock-form { width: 100%; display: flex; flex-direction: column; gap: 11px; }
   .lock-input {
-    text-align: center;
-    font-size: 17px;
-    letter-spacing: 6px;
-    padding: 15px 16px;
+    text-align: center; font-size: 17px;
+    letter-spacing: 6px; padding: 15px 16px;
     font-weight: 600;
   }
   .lock-input::placeholder {
-    letter-spacing: 1px;
-    font-weight: 400;
-    font-size: 14px;
+    letter-spacing: 1px; font-weight: 400; font-size: 14px;
   }
   .lock-error {
     font-size: 12.5px; color: var(--danger);
@@ -605,9 +632,17 @@
   }
   .lock-footer svg { width: 12px; height: 12px; color: var(--primary); }
   .lock-theme-toggle {
-    position: absolute;
-    top: 20px; right: 20px;
-    z-index: 10;
+    position: absolute; top: 20px; right: 20px; z-index: 10;
+  }
+  .setup-alt {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; margin-top: 6px;
+    color: var(--text-muted); font-size: 12px;
+    font-weight: 500;
+  }
+  .setup-alt::before, .setup-alt::after {
+    content: ''; flex: 1; height: 1px;
+    background: var(--border);
   }
 
   /* ---------- Utilities ---------- */
@@ -670,7 +705,15 @@
         </svg>
         Create Encrypted Vault
       </button>
-      <p class="lock-hint">Use a PIN (4+ digits) or a strong password. All your 2FA secrets will be encrypted with AES-256-GCM on this device — nothing is ever sent to a server.</p>
+      <div class="setup-alt">or</div>
+      <button class="btn btn-ghost" id="setupSkipBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+        Skip PIN & Continue
+      </button>
+      <p class="lock-hint">Use a PIN (4+ digits) or a strong password. Or skip — your vault will still be encrypted with AES-256-GCM using a device key, but auto-unlocks on this browser.</p>
     </div>
 
     <p class="lock-footer">
@@ -814,8 +857,17 @@
           </svg>
           Security
         </div>
-        <p class="card-desc">Your vault is encrypted with AES-256-GCM on this device. Auto-lock triggers when you're inactive.</p>
-        <div class="field">
+        <p class="card-desc">Your vault is encrypted with AES-256-GCM on this device.</p>
+
+        <div class="switch-row">
+          <div class="switch-label-wrap">
+            <div class="switch-title">Require PIN to unlock</div>
+            <div class="switch-desc" id="pinToggleDesc">Enter a PIN each time you open the app</div>
+          </div>
+          <div class="switch on" id="requirePinSwitch" role="switch" aria-checked="true" tabindex="0"></div>
+        </div>
+
+        <div class="field" id="autoLockField">
           <label class="field-label">Auto-lock after</label>
           <select class="input" id="autoLockSelect" style="cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2214%22 height=%2214%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%237ea79a%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><polyline points=%226 9 12 15 18 9%22/></svg>');background-repeat:no-repeat;background-position:right 15px center;padding-right:40px;">
             <option value="60">1 minute</option>
@@ -825,7 +877,8 @@
             <option value="0">Never</option>
           </select>
         </div>
-        <div class="btn-group" style="margin-top:14px;">
+
+        <div class="btn-group" style="margin-top:6px;">
           <button class="btn btn-secondary" id="changePinBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -948,7 +1001,7 @@
   </nav>
 </div>
 
-<!-- ============ PASSWORD MODAL (for backup encryption) ============ -->
+<!-- ============ PASSWORD MODAL ============ -->
 <div class="modal-overlay" id="pwModal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -1053,7 +1106,20 @@ async function aesDecrypt(key, ivB64, dataB64) {
   return JSON.parse(new TextDecoder().decode(plain));
 }
 
-/* ==================== VAULT (encrypted storage) ==================== */
+/* ==================== DEVICE KEY (for no-PIN mode) ==================== */
+const DEVICE_KEY_STORAGE = 'authenticator_device_key_v1';
+async function getDeviceAESKey() {
+  let keyB64 = localStorage.getItem(DEVICE_KEY_STORAGE);
+  if (!keyB64) {
+    const bytes = crypto.getRandomValues(new Uint8Array(32));
+    keyB64 = b64enc(bytes);
+    localStorage.setItem(DEVICE_KEY_STORAGE, keyB64);
+  }
+  const raw = b64dec(keyB64);
+  return crypto.subtle.importKey('raw', raw, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+}
+
+/* ==================== VAULT ==================== */
 const VAULT_KEY = 'authenticator_vault_v2';
 const LEGACY_KEY = 'twofa_accounts_v1';
 const AUTOLOCK_KEY = 'authenticator_autolock';
@@ -1062,6 +1128,7 @@ const session = {
   unlocked: false,
   key: null,
   salt: null,
+  hasPin: true,
   accounts: [],
   lastActivity: Date.now()
 };
@@ -1074,13 +1141,26 @@ function getVaultMeta() {
   try { return JSON.parse(localStorage.getItem(VAULT_KEY)); }
   catch { return null; }
 }
+function vaultHasPin() {
+  const meta = getVaultMeta();
+  if (!meta) return false;
+  return meta.hasPin !== false; // undefined => true (backward compat)
+}
 
-async function createVault(password) {
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const key = await deriveKey(password, salt);
+async function createVault(usePin, password) {
+  let key, salt;
+  if (usePin) {
+    salt = crypto.getRandomValues(new Uint8Array(16));
+    key = await deriveKey(password, salt);
+  } else {
+    salt = null;
+    key = await getDeviceAESKey();
+  }
   session.key = key;
   session.salt = salt;
+  session.hasPin = !!usePin;
   session.accounts = [];
+  // Legacy migration
   try {
     const legacy = JSON.parse(localStorage.getItem(LEGACY_KEY) || 'null');
     if (Array.isArray(legacy) && legacy.length) {
@@ -1100,20 +1180,36 @@ async function createVault(password) {
 async function unlockVault(password) {
   const meta = getVaultMeta();
   if (!meta) return false;
+  if (meta.hasPin === false) return false; // shouldn't happen
   const salt = b64dec(meta.salt);
   const key = await deriveKey(password, salt);
   try {
-    if (meta.iv && meta.data) {
-      const accounts = await aesDecrypt(key, meta.iv, meta.data);
-      session.accounts = Array.isArray(accounts) ? accounts : [];
-    } else {
-      session.accounts = [];
-    }
+    const accounts = await aesDecrypt(key, meta.iv, meta.data);
+    session.accounts = Array.isArray(accounts) ? accounts : [];
     session.key = key;
     session.salt = salt;
+    session.hasPin = true;
     session.unlocked = true;
     return true;
   } catch { return false; }
+}
+
+async function autoUnlock() {
+  const meta = getVaultMeta();
+  if (!meta || meta.hasPin !== false) return false;
+  try {
+    const key = await getDeviceAESKey();
+    const accounts = await aesDecrypt(key, meta.iv, meta.data);
+    session.accounts = Array.isArray(accounts) ? accounts : [];
+    session.key = key;
+    session.salt = null;
+    session.hasPin = false;
+    session.unlocked = true;
+    return true;
+  } catch (e) {
+    console.error('autoUnlock failed', e);
+    return false;
+  }
 }
 
 async function persistVault() {
@@ -1121,13 +1217,15 @@ async function persistVault() {
   const blob = await aesEncrypt(session.key, session.accounts);
   localStorage.setItem(VAULT_KEY, JSON.stringify({
     v: 2,
-    salt: b64enc(session.salt),
+    hasPin: session.hasPin,
+    salt: session.salt ? b64enc(session.salt) : null,
     iv: blob.iv,
     data: blob.data
   }));
 }
 
 function lockVault() {
+  if (!session.hasPin) return; // nothing to lock — auto-unlocks
   session.unlocked = false;
   session.key = null;
   session.salt = null;
@@ -1143,8 +1241,20 @@ async function changePin(newPassword) {
   const key = await deriveKey(newPassword, salt);
   session.salt = salt;
   session.key = key;
+  session.hasPin = true;
   await persistVault();
   return true;
+}
+
+async function verifyPin(pin) {
+  const meta = getVaultMeta();
+  if (!meta) return false;
+  if (meta.hasPin === false) return false;
+  try {
+    const key = await deriveKey(pin, b64dec(meta.salt));
+    await aesDecrypt(key, meta.iv, meta.data);
+    return true;
+  } catch { return false; }
 }
 
 /* ==================== UI HELPERS ==================== */
@@ -1176,6 +1286,30 @@ function avatarStyle(str) {
 }
 function initial(str) { return (str || '?').trim().charAt(0).toUpperCase() || '?'; }
 
+/* ==================== PIN UI STATE ==================== */
+function updatePinUI() {
+  const hasPin = !!session.hasPin;
+  const sw = $('#requirePinSwitch');
+  if (sw) {
+    sw.classList.toggle('on', hasPin);
+    sw.setAttribute('aria-checked', hasPin ? 'true' : 'false');
+  }
+  const desc = $('#pinToggleDesc');
+  if (desc) {
+    desc.textContent = hasPin
+      ? 'Enter a PIN each time you open the app'
+      : 'Auto-unlock — no PIN required on this browser';
+  }
+  const lockBtn = $('#lockNowBtn');
+  if (lockBtn) lockBtn.style.display = hasPin ? '' : 'none';
+  const autoLockField = $('#autoLockField');
+  if (autoLockField) autoLockField.style.display = hasPin ? '' : 'none';
+  const changePinBtn = $('#changePinBtn');
+  if (changePinBtn) changePinBtn.style.display = hasPin ? '' : 'none';
+  const lockNowBtn2 = $('#lockNowBtn2');
+  if (lockNowBtn2) lockNowBtn2.style.display = hasPin ? '' : 'none';
+}
+
 /* ==================== LOCK SCREEN / SETUP ==================== */
 function showLockScreen(mode) {
   lockScreen.classList.add('show');
@@ -1185,10 +1319,11 @@ function showLockScreen(mode) {
   $('#setupForm').classList.toggle('hidden', !isSetup);
   $('#lockTitle').textContent = isSetup ? 'Create your vault' : 'Welcome back';
   $('#lockSub').textContent = isSetup
-    ? 'Set a PIN to encrypt your 2FA secrets on this device'
+    ? 'Choose how you want to protect your 2FA secrets'
     : 'Enter your PIN to unlock your encrypted vault';
   setTimeout(() => {
-    (isSetup ? $('#setupPin') : $('#unlockPin')).focus();
+    if (isSetup) $('#setupPin').focus();
+    else $('#unlockPin').focus();
   }, 350);
   $('#unlockError').textContent = '';
   $('#setupError').textContent = '';
@@ -1201,6 +1336,7 @@ function showApp() {
   lockScreen.classList.remove('show');
   appFrame.style.visibility = 'visible';
   session.lastActivity = Date.now();
+  updatePinUI();
   render();
   if (getAccounts().length === 0) switchTab('scan');
   else switchTab('list');
@@ -1215,13 +1351,13 @@ async function doUnlock() {
   if (!pin) { $('#unlockError').textContent = 'Please enter your PIN'; return; }
   const btn = $('#unlockBtn');
   btn.disabled = true;
-  const originalHTML = btn.innerHTML;
+  const orig = btn.innerHTML;
   btn.innerHTML = 'Unlocking…';
   $('#unlockError').textContent = '';
   await new Promise(r => setTimeout(r, 50));
   const ok = await unlockVault(pin);
   btn.disabled = false;
-  btn.innerHTML = originalHTML;
+  btn.innerHTML = orig;
   if (ok) {
     showApp();
   } else {
@@ -1252,12 +1388,12 @@ async function doSetup() {
   if (p1 !== p2) { $('#setupError').textContent = 'PINs do not match'; return; }
   const btn = $('#setupBtn');
   btn.disabled = true;
-  const originalHTML = btn.innerHTML;
+  const orig = btn.innerHTML;
   btn.innerHTML = 'Creating vault…';
   $('#setupError').textContent = '';
   await new Promise(r => setTimeout(r, 50));
   try {
-    await createVault(p1);
+    await createVault(true, p1);
     showApp();
     toast('Vault created & encrypted', 'success');
   } catch (e) {
@@ -1265,12 +1401,87 @@ async function doSetup() {
     $('#setupError').textContent = 'Failed to create vault';
   }
   btn.disabled = false;
-  btn.innerHTML = originalHTML;
+  btn.innerHTML = orig;
 }
+
+/* Skip PIN setup */
+$('#setupSkipBtn').onclick = async () => {
+  const btn = $('#setupSkipBtn');
+  btn.disabled = true;
+  try {
+    await createVault(false, null);
+    showApp();
+    toast('Vault created — no PIN', 'success');
+  } catch (e) {
+    console.error(e);
+    toast('Failed to create vault', 'error');
+  }
+  btn.disabled = false;
+};
 
 /* Manual lock buttons */
 $('#lockNowBtn').onclick = () => lockVault();
 $('#lockNowBtn2').onclick = () => lockVault();
+
+/* ==================== PIN TOGGLE ==================== */
+async function disablePin() {
+  if (!confirm('Without a PIN, anyone using this browser can access your 2FA codes.\n\nAre you sure you want to disable PIN protection?')) return false;
+  const pin = await askPassword({
+    title: 'Confirm PIN',
+    sub: 'Enter your current PIN to disable PIN protection.',
+    confirm: false
+  });
+  if (!pin) return false;
+  const ok = await verifyPin(pin);
+  if (!ok) { toast('Incorrect PIN', 'error'); return false; }
+  // Re-encrypt with device key
+  const devKey = await getDeviceAESKey();
+  session.key = devKey;
+  session.salt = null;
+  session.hasPin = false;
+  await persistVault();
+  return true;
+}
+
+async function enablePin() {
+  const newPin = await askPassword({
+    title: 'Set PIN',
+    sub: 'Choose a PIN or password. You will need it to unlock the vault.',
+    confirm: true,
+    confirmLabel: 'Confirm PIN'
+  });
+  if (!newPin) return false;
+  if (newPin.length < 4) { toast('Use at least 4 characters', 'error'); return false; }
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const key = await deriveKey(newPin, salt);
+  session.key = key;
+  session.salt = salt;
+  session.hasPin = true;
+  await persistVault();
+  return true;
+}
+
+$('#requirePinSwitch').onclick = async () => {
+  if (!session.unlocked) return;
+  const sw = $('#requirePinSwitch');
+  sw.style.pointerEvents = 'none';
+  let changed = false;
+  if (session.hasPin) {
+    changed = await disablePin();
+    if (changed) toast('PIN protection disabled', 'success');
+  } else {
+    changed = await enablePin();
+    if (changed) toast('PIN protection enabled', 'success');
+  }
+  updatePinUI();
+  sw.style.pointerEvents = '';
+};
+$('#requirePinSwitch').onkeydown = (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    $('#requirePinSwitch').click();
+  }
+};
 
 /* ==================== AUTO-LOCK ==================== */
 function recordActivity() { session.lastActivity = Date.now(); }
@@ -1279,6 +1490,7 @@ function recordActivity() { session.lastActivity = Date.now(); }
 );
 setInterval(() => {
   if (!session.unlocked) return;
+  if (!session.hasPin) return; // auto-lock only when PIN is enabled
   const t = parseInt(localStorage.getItem(AUTOLOCK_KEY) || '300', 10);
   if (t > 0 && Date.now() - session.lastActivity > t * 1000) lockVault();
 }, 5000);
@@ -1293,6 +1505,7 @@ autoLockSelect.onchange = () => {
 
 /* ==================== CHANGE PIN ==================== */
 $('#changePinBtn').onclick = async () => {
+  if (!session.hasPin) return;
   const np = await askPassword({
     title: 'Change PIN',
     sub: 'Enter a new PIN or password. Your vault will be re-encrypted with it.',
@@ -1300,6 +1513,7 @@ $('#changePinBtn').onclick = async () => {
     confirmLabel: 'New PIN'
   });
   if (!np) return;
+  if (np.length < 4) { toast('Use at least 4 characters', 'error'); return; }
   const btn = $('#changePinBtn');
   btn.disabled = true;
   await changePin(np);
@@ -1319,7 +1533,7 @@ function switchTab(tab) {
 $$('.nav-item').forEach(n => n.onclick = () => switchTab(n.dataset.tab));
 $('#emptyCta').onclick = () => switchTab('scan');
 
-/* ==================== ACCOUNTS (in-memory only) ==================== */
+/* ==================== ACCOUNTS ==================== */
 function getAccounts() { return session.accounts; }
 async function setAccounts(list) {
   session.accounts = list;
@@ -1485,8 +1699,7 @@ function buildCard(acc) {
         <svg width="44" height="44" viewBox="0 0 44 44">
           <circle class="ring-track" cx="22" cy="22" r="18" stroke-width="3.5" fill="none"/>
           <circle class="ring-progress" cx="22" cy="22" r="18" stroke-width="3.5" fill="none"
-                  data-ring="${acc.id}"
-                  stroke-dasharray="113.1" stroke-dashoffset="0"/>
+                  data-ring="${acc.id}" stroke-dasharray="113.1" stroke-dashoffset="0"/>
         </svg>
         <div class="ring-num" data-sec="${acc.id}">30</div>
       </div>
@@ -1657,9 +1870,10 @@ $('#clearAll').onclick = () => {
   const list = session.accounts;
   if (!list.length) { toast('Nothing to delete', 'error'); return; }
   if (!confirm(`Delete all ${list.length} accounts? This cannot be undone.`)) return;
-  if (!confirm('Really? This will also reset your vault.')) return;
+  if (!confirm('Really? This will also reset your vault and device key.')) return;
   localStorage.removeItem(VAULT_KEY);
   localStorage.removeItem(LEGACY_KEY);
+  localStorage.removeItem(DEVICE_KEY_STORAGE);
   session.accounts = [];
   session.unlocked = false;
   session.key = null;
@@ -1711,11 +1925,18 @@ function askPassword({ title, sub, confirm = false, confirmLabel = 'Confirm Pass
 }
 
 /* ==================== INIT ==================== */
-(function init() {
-  if (vaultExists()) {
+(async function init() {
+  if (!vaultExists()) {
+    showLockScreen('setup');
+    return;
+  }
+  if (vaultHasPin()) {
     showLockScreen('unlock');
   } else {
-    showLockScreen('setup');
+    // No PIN — auto unlock
+    const ok = await autoUnlock();
+    if (ok) showApp();
+    else showLockScreen('setup');
   }
 })();
 </script>
